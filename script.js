@@ -83,7 +83,7 @@ for (let button of operator) {
     if (currentOperation.length >= 1 && operationQueue.length != 2) {
       convertInputToFloat();
       insertOperator(button.id);
-    } else if (operatorIncluded) {
+    } else if (operatorIncluded && currentOperation.length >= 1) {
       if (button.id === '=') {
         convertInputToFloat();
         operationQueue = [calculation(...operationQueue)];
@@ -99,29 +99,3 @@ for (let button of operator) {
     updateDisplay();
   });
 }
-
-/* for (let button of operator) {
-  button.addEventListener('click', () => {
-    if (
-      currentOperationValue.length >= 1 &&
-      previousOperationValue.length != 2
-    ) {
-      convertInputToFloat();
-      insertOperator(button.id);
-    } else if (operatorIncluded) {
-      if (button.id === '=') {
-        convertInputToFloat();
-        previousOperationValue = [calculatation(...previousOperationValue)];
-        operatorIncluded = false;
-      } else if (button.id !== '=') {
-        convertInputToFloat();
-        previousOperationValue = [calculatation(...previousOperationValue)];
-        insertOperator(button.id);
-      }
-    } else if (button.id !== '=' && previousOperationValue.length === 1) {
-      insertOperator(button.id);
-    }
-    updateDisplay();
-  });
-}
- */
