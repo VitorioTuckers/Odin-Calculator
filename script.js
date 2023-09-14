@@ -2,6 +2,10 @@ const calculatorButtons = document.querySelector('.calculator-buttons');
 const currentOperationDisplay = document.querySelector('#current-operation');
 const previousOperationDisplay = document.querySelector('#previous-operation');
 
+let valuePool = [];
+let currentOperation = [[]];
+let previousOperation = [];
+
 const operations = {
   '+': (firstValue, secondValue) => {
     return firstValue + secondValue;
@@ -24,26 +28,42 @@ function calculate(values, operator) {
   return values.reduce(operations[operator]);
 }
 
-console.log(calculate([10, 10], '+'));
-
-let currentOperation = [];
-let previousOperation = [];
-
 function insertNumber(number) {
-  currentOperation.push(number);
+  if (number == '.' && valuePool.includes('.')) {
+    null;
+  } else {
+    valuePool.push(number);
+    updateDisplay(valuePool);
+  }
 }
 
 function insertOperator(operator) {
-  currentOperation.push(operator);
+  if (operator == '=') {
+    currentOperation[0].push(parseFloat(valuePool.join('')));
+    valuePool = [[calculate(...currentOperation)]];
+    currentOperation = [[]];
+    updateDisplay(valuePool);
+  } else if (currentOperation.length < 2) {
+    currentOperation[0].push(parseFloat(valuePool.join('')));
+    currentOperation.push(operator);
+    valuePool.length = 0;
+    updateDisplay([currentOperation[1]]);
+  }
 }
 
 function clearDisplay(inputId) {
   if (inputId == 'C') {
-    currentOperation.pop();
+    valuePool.pop();
   } else {
-    currentOperation.length = 0;
+    currentOperation = [[]];
     previousOperation.length = 0;
+    valuePool.length = 0;
   }
+  updateDisplay(valuePool);
+}
+
+function updateDisplay(value) {
+  currentOperationDisplay.textContent = value.join('');
 }
 
 calculatorButtons.addEventListener('click', e => {
@@ -56,6 +76,5 @@ calculatorButtons.addEventListener('click', e => {
   } else {
     clearDisplay(targetId);
   }
-  currentOperationDisplay.textContent = currentOperation;
-  previousOperationDisplay.textContent = previousOperation;
+  console.log(currentOperation);
 });
