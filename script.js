@@ -2,8 +2,7 @@ const calculatorButtons = document.querySelector('.calculator-buttons');
 const currentOperationDisplay = document.querySelector('#current-operation');
 const previousOperationDisplay = document.querySelector('#previous-operation');
 
-let valuePool = [];
-let currentOperation = [[]];
+let currentOperation = [];
 let previousOperation = [];
 
 const operations = {
@@ -28,53 +27,63 @@ function calculate(values, operator) {
   return values.reduce(operations[operator]);
 }
 
-function insertNumber(number) {
-  if (number == '.' && valuePool.includes('.')) {
-    null;
-  } else {
-    valuePool.push(number);
-    updateDisplay(valuePool);
-  }
-}
-
-function insertOperator(operator) {
-  if (operator == '=') {
-    currentOperation[0].push(parseFloat(valuePool.join('')));
-    valuePool = [[calculate(...currentOperation)]];
-    currentOperation = [[]];
-    updateDisplay(valuePool);
-  } else if (currentOperation.length < 2) {
-    currentOperation[0].push(parseFloat(valuePool.join('')));
-    currentOperation.push(operator);
-    valuePool.length = 0;
-    updateDisplay([currentOperation[1]]);
-  }
-}
-
 function clearDisplay(inputId) {
   if (inputId == 'C') {
-    valuePool.pop();
+    currentOperation.pop();
   } else {
-    currentOperation = [[]];
+    currentOperation.length = 0;
     previousOperation.length = 0;
-    valuePool.length = 0;
   }
-  updateDisplay(valuePool);
+  updateDisplay();
 }
 
-function updateDisplay(value) {
-  currentOperationDisplay.textContent = value.join('');
+function updateDisplay() {
+  currentOperationDisplay.textContent = currentOperation.join('');
+  previousOperationDisplay.textContent = previousOperation.join(' ');
+}
+
+function convertValue() {
+  return previousOperation.push(parseFloat(currentOperation.join('')));
+}
+
+function insertNumber(number) {
+  if (number === '.' && currentOperation.includes('.')) {
+    null;
+  } else if (number === '.' && currentOperation.length === 0) {
+    currentOperation.push(0);
+    currentOperation.push(number);
+  } else {
+    currentOperation.push(number);
+  }
+  updateDisplay();
+}
+
+function handleOperator(operator) {
+  if (operator === '=' && previousOperation.length === 2) {
+    convertValue();
+    currentOperation = [
+      calculate(
+        [previousOperation[0], previousOperation[2]],
+        previousOperation[1]
+      ),
+    ];
+    previousOperation.length = 0;
+  } else if (operator !== '=' && previousOperation.length === 0) {
+    convertValue();
+    previousOperation.push(operator);
+    currentOperation.length = 0;
+  }
+  updateDisplay();
 }
 
 calculatorButtons.addEventListener('click', e => {
-  let targetId = e.target.id;
-  let targetClass = e.target.className;
+  const targetId = e.target.id;
+  const targetClass = e.target.className;
   if (targetClass == 'num') {
     insertNumber(targetId);
   } else if (targetClass == 'operator') {
-    insertOperator(targetId);
+    handleOperator(targetId);
   } else {
     clearDisplay(targetId);
   }
-  console.log(currentOperation);
 });
