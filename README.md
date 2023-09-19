@@ -10,16 +10,4 @@ Open the following link on your preferred browser:
 
 ## Description
 
-This is a simple vanilla JS calculator
-
-## Current Version
-
-1.1
-
-### Fixes and improvements
-
--Modified event listeners functionality to improve user experience (Some inputs that lead to errors before were fixed)
-
-### Known issues
-
--When user inputs more than one operator it results in a NaN because the extra operator is being calculated (10 + +) for instance
+This is a simple vanilla JS calculator with basic functions for handling the event listeners,two arrays for handling current and previous calculator values, and a single object containing the actual calculations.

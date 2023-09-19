@@ -47,7 +47,7 @@ function convertValue() {
 }
 
 function insertNumber(number) {
-  if (number === '.' && currentOperation.includes('.')) {
+  if (number === '.' && currentOperation.join('').includes('.')) {
     null;
   } else if (number === '.' && currentOperation.length === 0) {
     currentOperation.push(0);
@@ -58,17 +58,31 @@ function insertNumber(number) {
   updateDisplay();
 }
 
+function removeTrailingZeros(result) {
+  const convertedNumber = String(result).replace(/\.0+$/, '');
+  return parseFloat(convertedNumber);
+}
+
 function handleOperator(operator) {
-  if (operator === '=' && previousOperation.length === 2) {
+  if (
+    operator === '=' &&
+    previousOperation.length === 2 &&
+    currentOperation.length >= 1
+  ) {
     convertValue();
     currentOperation = [
       calculate(
         [previousOperation[0], previousOperation[2]],
         previousOperation[1]
-      ),
+      ).toFixed(11),
     ];
+    currentOperation = [removeTrailingZeros(currentOperation)];
     previousOperation.length = 0;
-  } else if (operator !== '=' && previousOperation.length === 0) {
+  } else if (
+    operator !== '=' &&
+    previousOperation.length === 0 &&
+    currentOperation.length >= 1
+  ) {
     convertValue();
     previousOperation.push(operator);
     currentOperation.length = 0;
