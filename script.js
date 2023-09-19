@@ -1,4 +1,5 @@
 const calculatorButtons = document.querySelector('.calculator-buttons');
+const calcBtns = document.querySelectorAll('button');
 const currentOperationDisplay = document.querySelector('#current-operation');
 const previousOperationDisplay = document.querySelector('#previous-operation');
 
@@ -66,27 +67,20 @@ function removeTrailingZeros(result) {
   return parseFloat(convertedNumber);
 }
 
-function calculatePrev() {
+function calculate(operation, type) {
   convertValue();
-  prevOprtn = [operate([prevOprtn[0], prevOprtn[2]], prevOprtn[1]).toFixed(11)];
-  prevOprtn = [removeTrailingZeros(prevOprtn)];
-  return prevOprtn;
-}
-
-function calculateCur() {
-  convertValue();
-  curOprtn = [operate([prevOprtn[0], prevOprtn[2]], prevOprtn[1]).toFixed(11)];
-  curOprtn = [removeTrailingZeros(curOprtn)];
-  prevOprtn.length = 0;
-  return curOprtn;
+  operation = [operate([prevOprtn[0], prevOprtn[2]], prevOprtn[1]).toFixed(11)];
+  operation = [removeTrailingZeros(operation)];
+  type === 'cur' ? (prevOprtn.length = 0) : null;
+  return operation;
 }
 
 function handleOperator(operator) {
   if (operator === '=' && prevOprtn.length === 2 && curOprtn.length >= 1) {
-    calculateCur();
+    curOprtn = calculate(curOprtn, 'cur');
   } else if (operator !== '=') {
     if (prevOprtn.length === 2 && curOprtn.length >= 1) {
-      calculatePrev();
+      prevOprtn = calculate(prevOprtn);
       insertOperator(operator);
     } else if (prevOprtn.length === 0 && curOprtn.length >= 1) {
       convertValue();
@@ -95,15 +89,17 @@ function handleOperator(operator) {
   }
 }
 
-calculatorButtons.addEventListener('click', e => {
-  const targetId = e.target.id;
-  const targetClass = e.target.className;
-  if (targetClass == 'num') {
-    insertNumber(targetId);
-  } else if (targetClass == 'operator') {
-    handleOperator(targetId);
-  } else {
-    clearDisplay(targetId);
-  }
-  updateDisplay();
-});
+calcBtns.forEach(calc_button =>
+  calc_button.addEventListener('click', e => {
+    const targetId = e.target.id;
+    const targetClass = e.target.className;
+    if (targetClass == 'num') {
+      insertNumber(targetId);
+    } else if (targetClass == 'operator') {
+      handleOperator(targetId);
+    } else {
+      clearDisplay(targetId);
+    }
+    updateDisplay();
+  })
+);

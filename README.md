@@ -10,4 +10,4 @@ Open the following link on your preferred browser:
 
 ## Description
 
-This is a simple vanilla JS calculator with basic functions for handling the event listeners,two arrays for handling current and previous calculator values, and a single object containing the actual calculations.
+This is a simple vanilla JS calculator with basic functions for handling the event listeners and calculator functionality,two arrays for handling current and previous calculator values, and a single object containing the actual operations.
