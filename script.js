@@ -29,7 +29,7 @@ function operate(values, operator) {
 }
 
 function clearDisplay(inputId) {
-  if (inputId == 'C') {
+  if (inputId === 'C') {
     curOprtn.pop();
   } else {
     curOprtn.length = 0;
@@ -70,9 +70,8 @@ function removeTrailingZeros(result) {
 function calculate(operation, type) {
   convertValue();
   operation = [operate([prevOprtn[0], prevOprtn[2]], prevOprtn[1]).toFixed(11)];
-  operation = [removeTrailingZeros(operation)];
   type === 'cur' ? (prevOprtn.length = 0) : null;
-  return operation;
+  return [removeTrailingZeros(operation)];
 }
 
 function handleOperator(operator) {
@@ -93,9 +92,9 @@ calcBtns.forEach(calc_button =>
   calc_button.addEventListener('click', e => {
     const targetId = e.target.id;
     const targetClass = e.target.className;
-    if (targetClass == 'num') {
+    if (targetClass === 'num') {
       insertNumber(targetId);
-    } else if (targetClass == 'operator') {
+    } else if (targetClass === 'operator') {
       handleOperator(targetId);
     } else {
       clearDisplay(targetId);
