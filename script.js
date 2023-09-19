@@ -2,8 +2,8 @@ const calculatorButtons = document.querySelector('.calculator-buttons');
 const currentOperationDisplay = document.querySelector('#current-operation');
 const previousOperationDisplay = document.querySelector('#previous-operation');
 
-let currentOperation = [];
-let previousOperation = [];
+let curOprtn = [];
+let prevOprtn = [];
 
 const operations = {
   '+': (firstValue, secondValue) => {
@@ -23,39 +23,42 @@ const operations = {
   },
 };
 
-function calculate(values, operator) {
+function operate(values, operator) {
   return values.reduce(operations[operator]);
 }
 
 function clearDisplay(inputId) {
   if (inputId == 'C') {
-    currentOperation.pop();
+    curOprtn.pop();
   } else {
-    currentOperation.length = 0;
-    previousOperation.length = 0;
+    curOprtn.length = 0;
+    prevOprtn.length = 0;
   }
-  updateDisplay();
 }
 
 function updateDisplay() {
-  currentOperationDisplay.textContent = currentOperation.join('');
-  previousOperationDisplay.textContent = previousOperation.join(' ');
-}
-
-function convertValue() {
-  return previousOperation.push(parseFloat(currentOperation.join('')));
+  currentOperationDisplay.textContent = curOprtn.join('');
+  previousOperationDisplay.textContent = prevOprtn.join(' ');
 }
 
 function insertNumber(number) {
-  if (number === '.' && currentOperation.join('').includes('.')) {
+  if (number === '.' && curOprtn.join('').includes('.')) {
     null;
-  } else if (number === '.' && currentOperation.length === 0) {
-    currentOperation.push(0);
-    currentOperation.push(number);
+  } else if (number === '.' && curOprtn.length === 0) {
+    curOprtn.push(0);
+    curOprtn.push(number);
   } else {
-    currentOperation.push(number);
+    curOprtn.push(number);
   }
-  updateDisplay();
+}
+
+function convertValue() {
+  return prevOprtn.push(parseFloat(curOprtn.join('')));
+}
+
+function insertOperator(operator) {
+  prevOprtn.push(operator);
+  curOprtn.length = 0;
 }
 
 function removeTrailingZeros(result) {
@@ -63,31 +66,33 @@ function removeTrailingZeros(result) {
   return parseFloat(convertedNumber);
 }
 
+function calculatePrev() {
+  convertValue();
+  prevOprtn = [operate([prevOprtn[0], prevOprtn[2]], prevOprtn[1]).toFixed(11)];
+  prevOprtn = [removeTrailingZeros(prevOprtn)];
+  return prevOprtn;
+}
+
+function calculateCur() {
+  convertValue();
+  curOprtn = [operate([prevOprtn[0], prevOprtn[2]], prevOprtn[1]).toFixed(11)];
+  curOprtn = [removeTrailingZeros(curOprtn)];
+  prevOprtn.length = 0;
+  return curOprtn;
+}
+
 function handleOperator(operator) {
-  if (
-    operator === '=' &&
-    previousOperation.length === 2 &&
-    currentOperation.length >= 1
-  ) {
-    convertValue();
-    currentOperation = [
-      calculate(
-        [previousOperation[0], previousOperation[2]],
-        previousOperation[1]
-      ).toFixed(11),
-    ];
-    currentOperation = [removeTrailingZeros(currentOperation)];
-    previousOperation.length = 0;
-  } else if (
-    operator !== '=' &&
-    previousOperation.length === 0 &&
-    currentOperation.length >= 1
-  ) {
-    convertValue();
-    previousOperation.push(operator);
-    currentOperation.length = 0;
+  if (operator === '=' && prevOprtn.length === 2 && curOprtn.length >= 1) {
+    calculateCur();
+  } else if (operator !== '=') {
+    if (prevOprtn.length === 2 && curOprtn.length >= 1) {
+      calculatePrev();
+      insertOperator(operator);
+    } else if (prevOprtn.length === 0 && curOprtn.length >= 1) {
+      convertValue();
+      insertOperator(operator);
+    }
   }
-  updateDisplay();
 }
 
 calculatorButtons.addEventListener('click', e => {
@@ -100,4 +105,5 @@ calculatorButtons.addEventListener('click', e => {
   } else {
     clearDisplay(targetId);
   }
+  updateDisplay();
 });
